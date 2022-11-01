@@ -32,24 +32,22 @@ export class TransfersService {
 
       if (find.length > 0) throw new UnauthorizedException("the transaction has already been made");
 
-
-
       const findSivings = await this.accountsService.findByIdSaving(data.accountorigin);
       const findStream = await this.accountsService.findByIdStream(data.accountdestiny);
 
       if (findSivings && findStream) {
         this.accountsService.setCurrentValueSAvingStream(data.accountorigin, data.accountdestiny, data.amount);
         const transfer = await this.transferModel.create({ accountorigin: data.accountorigin, accountdestiny: data.accountdestiny, send: data.id, us: data.us, token: token, origin: data.origin, amount: data.amount });
+        this.registeredService.createRegisteredStream(data.id, data.accountdestiny);
         return { transfer };
       }
 
       if (!findSivings && !findStream) {
         this.accountsService.setCurrentValueStreamSving(data.accountdestiny, data.accountorigin, data.amount);
         const transfer = await this.transferModel.create({ accountorigin: data.accountorigin, accountdestiny: data.accountdestiny, send: data.id, us: data.us, token: token, origin: data.origin, amount: data.amount });
+        this.registeredService.createRegisteredSaving(data.id, data.accountdestiny);
         return { transfer };
       }
-
-
 
 
       if (data.origin === 'notregistered') {

@@ -8,7 +8,7 @@ export class RegisteredStreamAccount {
     @Prop({type : [Types.ObjectId],ref : User.name ,required :true})
      user : string;
 
-     @Prop({type : [Types.ObjectId],ref : AccountSaving.name ,required :true })
+     @Prop({ unique : true ,type : [Types.ObjectId],ref : AccountSaving.name ,required :true })
      account : string;
 }
 

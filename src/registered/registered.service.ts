@@ -17,6 +17,8 @@ export class RegisteredService {
 
   }
   async createRegisteredStream(uid : string ,account : string) {
+    const result =  this.findByIdRegistredStream(account);
+    if(result) throw new  BadRequestException("Account Registered");
       try {
      const  register =   await this.accountStreamModel.create({ user : uid, account : account});
      return {register};
@@ -26,6 +28,8 @@ export class RegisteredService {
   }
 
   async createRegisteredSaving(uid : string,account : string) {
+    const  result =  this.findByIdRegistredSaving(account);
+    if(result) throw new  BadRequestException("Account Registered");
      try {
     const register = await this.accountSavingModel.create({user : uid, account : account});
     return {register};
@@ -34,6 +38,36 @@ export class RegisteredService {
      }
 
   }
+
+  async findByIdRegistredSaving(id: string):Promise<boolean>{
+   let  register : RegisteredSavingAccount = null;
+     try {
+       register =  await this.accountSavingModel.findOne({account : id});
+     } catch (error) {
+       this.handleExeptions(error);
+     }
+    if(register) {
+      return true;
+    }else{
+      return false;
+    }
+  }
+  async findByIdRegistredStream(id: string):Promise<boolean>{
+    let register : RegisteredStreamAccount = null;
+      try {
+          register =   await this.accountStreamModel.findById({account : id});
+        } catch (error) {
+           this.handleExeptions(error);
+        }
+    if(register) {
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+
+
 
   async findAllStreamAccounts(uid : string) {
             try {
@@ -54,7 +88,11 @@ export class RegisteredService {
   }
 
   handleExeptions(error : any){
-   console.log(error);
+    if (error.code === 11000 ) throw new BadRequestException("The register exist");
+
+    throw new InternalServerErrorException(
+      `Internal Server Error - Check server logs`,
+    );
   }
 
  
