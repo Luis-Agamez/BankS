@@ -17,7 +17,7 @@ export class RegisteredService {
 
   }
   async createRegisteredStream(uid : string ,account : string) {
-    const result =  this.findByIdRegistredStream(account);
+    const result =  this.findByIdRegistredStream(uid,account);
     if(result) throw new  BadRequestException("Account Registered");
       try {
      const  register =   await this.accountStreamModel.create({ user : uid, account : account});
@@ -28,7 +28,7 @@ export class RegisteredService {
   }
 
   async createRegisteredSaving(uid : string,account : string) {
-    const  result =  this.findByIdRegistredSaving(account);
+    const  result =  this.findByIdRegistredSaving(uid,account);
     if(result) throw new  BadRequestException("Account Registered");
      try {
     const register = await this.accountSavingModel.create({user : uid, account : account});
@@ -39,27 +39,27 @@ export class RegisteredService {
 
   }
 
-  async findByIdRegistredSaving(id: string):Promise<boolean>{
-   let  register : RegisteredSavingAccount = null;
+  async findByIdRegistredSaving(uid : string ,accountId: string):Promise<boolean>{
+   let  register : RegisteredSavingAccount [] = null;
      try {
-       register =  await this.accountSavingModel.findOne({account : id});
+       register =  await this.accountSavingModel.find({user : uid}).find({ account :accountId});
      } catch (error) {
        this.handleExeptions(error);
      }
-    if(register) {
+    if(register.length > 0) {
       return true;
     }else{
       return false;
     }
   }
-  async findByIdRegistredStream(id: string):Promise<boolean>{
-    let register : RegisteredStreamAccount = null;
+  async findByIdRegistredStream(uid : string ,accountId: string):Promise<boolean>{
+    let register :RegisteredStreamAccount [] = null;
       try {
-          register =   await this.accountStreamModel.findById({account : id});
+          register =   await this.accountStreamModel.find({user : uid}).find({ account : accountId});
         } catch (error) {
            this.handleExeptions(error);
         }
-    if(register) {
+    if(register.length > 0) {
       return true;
     }else{
       return false;
