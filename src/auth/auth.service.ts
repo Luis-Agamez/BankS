@@ -49,6 +49,37 @@ export class AuthService {
     return { user, token: this.getJwtToken({ id: user.id }) };
   }
 
+
+  async setActiveAccountStream(uid  : string){
+    try {
+     let user : User = null;
+     user = await this.userModel.findById(uid);
+     if(!user.activeStream){
+      await this.userModel.findByIdAndUpdate(uid,{activeStream : true },{new : true})
+     }else{
+      return 
+     }
+     
+    } catch (error) {  
+      this.handleExeptions(error);
+    }
+  }
+
+  async setActiveAccountSaving(uid  : string){
+    try {
+      let user : User = null;
+      user = await this.userModel.findById(uid);
+      if(!user.activeSavings){
+       await this.userModel.findByIdAndUpdate(uid,{ activeSavings : true },{new : true})
+      }else{
+       return 
+      }
+      
+     } catch (error) {  
+       this.handleExeptions(error);
+     }
+  }
+
   async renewToken(user: User) {
   let userDb: User = null;
      try {

@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import { CreateAccountStreamDto } from './dto/create-account-stream.dto';
 import { AccountSaving } from './entities/accountsaving.entity';
 import { Account } from './interfaces/account.interface';
+import { AuthService } from 'src/auth/auth.service';
 @Injectable()
 export class AccountsService {
   constructor(
@@ -13,18 +14,33 @@ export class AccountsService {
     private readonly accountSavingModel : Model<AccountSaving>,
     @InjectModel(AccountStream.name)
     private readonly accountStreamModel : Model<AccountStream>,
+    private readonly authService : AuthService
     ){}
 
     
- async createAccountSaving(user:String,createAccountDto: CreateAccountSavingDto){
+ async createAccountSaving(user:string,createAccountDto: CreateAccountSavingDto){
     try {
       const account =  await this.accountSavingModel.create({userDb : user,...createAccountDto});
+       this.authService.setActiveAccountSaving(user);
       return account;
     } catch (error) {
       this.handleExeptions(error);
     }
     ;
   }
+
+
+  async createAccountStream(user: string,createAccountDto: CreateAccountStreamDto) {
+    try {
+      const account =   await this.accountStreamModel.create({userDb : user,...createAccountDto});
+      this.authService.setActiveAccountStream(user);
+          return account;
+    } catch (error) {
+      this.handleExeptions(error);
+    }
+    ;
+  }
+  
 
 
  async findAccountSaving(id : String) {
@@ -70,15 +86,6 @@ export class AccountsService {
 
 
       
- async createAccountStream(user: String,createAccountDto: CreateAccountStreamDto) {
-  try {
-    const account =   await this.accountStreamModel.create({userDb : user,...createAccountDto});
-    return account;
-  } catch (error) {
-    this.handleExeptions(error);
-  }
-  ;
-}
 
 
 async findAccountStream(id : String) {

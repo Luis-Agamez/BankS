@@ -30,7 +30,7 @@ export class TransfersService {
 
       const find = await this.transferModel.find({ token });
 
-      if (find.length > 0) throw new UnauthorizedException("the transaction has already been made");
+      if (find.length > 0) return new BadRequestException("the transaction has already been made");
 
       const findSivings = await this.accountsService.findByIdSaving(data.accountorigin);
       const findStream = await this.accountsService.findByIdStream(data.accountdestiny);
@@ -70,16 +70,17 @@ export class TransfersService {
       const transfer = await this.transferModel.create({ accountorigin: data.accountorigin, accountdestiny: data.accountdestiny, send: data.id, us: data.us, token: token, origin: data.origin, amount: data.amount });
 
       if (data.origin === "stream") {
-        this.accountsService.setCurrentValueAccountStream(data.accountorigin, data.accountdestiny, data.amount);
         this.registeredService.createRegisteredStream(data.id, data.accountdestiny);
+        this.accountsService.setCurrentValueAccountStream(data.accountorigin, data.accountdestiny, data.amount);
+       
       }
 
       if (data.origin === "saving") {
-        this.accountsService.setCurrentValueAccountSaving(data.accountdestiny, data.accountorigin, data.amount);
         this.registeredService.createRegisteredSaving(data.id, data.accountdestiny);
+       this.accountsService.setCurrentValueAccountSaving(data.accountdestiny, data.accountorigin, data.amount);
+      console.log("saving");
+       
       }
-
-
 
       return { transfer };
     } catch (error) {
@@ -119,9 +120,7 @@ export class TransfersService {
 
   private handleExeptions(error: any): never {
     console.log(error.code);
-
-
-    throw new InternalServerErrorException(`Internal Server Error - Check server logs`,);
+  throw new InternalServerErrorException(`Internal Server Error - Check server logs`,);
   }
 
 }

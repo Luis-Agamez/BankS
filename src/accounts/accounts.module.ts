@@ -9,7 +9,7 @@ import { AccountSaving, AccountSavingSchema } from './entities/accountsaving.ent
 @Module({
   controllers: [AccountsController],
   providers: [AccountsService],
-  imports: [ MongooseModule.forFeature([{name:AccountStream.name,schema:AccountStreamSchema},{name:AccountSaving.name,schema:AccountSavingSchema}]), AuthModule],
+  imports: [ AuthModule, MongooseModule.forFeature([{name:AccountStream.name,schema:AccountStreamSchema},{name:AccountSaving.name,schema:AccountSavingSchema}])],
   exports : [AccountsService]
 })
 export class AccountsModule {}
